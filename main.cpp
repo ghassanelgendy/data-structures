@@ -3,6 +3,7 @@
 #include<cassert>
 #include<algorithm>
 #include <fstream>
+
 using namespace std;
 
 class Item {
@@ -12,24 +13,26 @@ private:
     double price;
 public:
     Item(string name, string category, double p) : itemName(name), category(category), price(p) {}
+
     string getName() const {
         return itemName;
     }
-    bool operator<(const Item& other) const {
+
+    bool operator<(const Item &other) const {
         return price < other.price;
     }
 
-    bool operator>(const Item& other) const {
+    bool operator>(const Item &other) const {
         return price > other.price;
     }
 
-    bool operator==(const Item& other) const {
-        return price == other.price&&itemName==other.itemName&&category==other.category;
+    bool operator==(const Item &other) const {
+        return price == other.price && itemName == other.itemName && category == other.category;
     }
 
 
-    friend ostream& operator<<(ostream& os, const Item& item) {
-        os << " Name: " << item.itemName << ", Category: " << item.category << ", Price: " << item.price<<'\n';
+    friend ostream &operator<<(ostream &os, const Item &item) {
+        os << " Name: " << item.itemName << ", Category: " << item.category << ", Price: " << item.price << '\n';
         return os;
     }
 };
@@ -49,10 +52,10 @@ class AVLTree {
 private:
     T data;
     int height;
-    AVLTree* left{};
-    AVLTree* right{};
+    AVLTree *left{};
+    AVLTree *right{};
 
-    int getHeight(AVLTree* node) {
+    int getHeight(AVLTree *node) {
         if (node == nullptr)
             return -1;
         return node->height;
@@ -62,8 +65,8 @@ private:
         return getHeight(left) - getHeight(right);
     }
 
-    AVLTree* rightRotate(AVLTree* Q) {
-        AVLTree* P = Q->left;
+    AVLTree *rightRotate(AVLTree *Q) {
+        AVLTree *P = Q->left;
         Q->left = P->right;
         P->right = Q;
         Q->updateHeight();
@@ -71,8 +74,8 @@ private:
         return P;
     }
 
-    AVLTree* leftRotate(AVLTree* P) {
-        AVLTree* Q = P->right;
+    AVLTree *leftRotate(AVLTree *P) {
+        AVLTree *Q = P->right;
         P->right = Q->left;
         Q->left = P;
         P->updateHeight();
@@ -83,20 +86,22 @@ private:
     int updateHeight() {
         return height = 1 + max(getHeight(left), getHeight(right));
     }
-    void special_delete(AVLTree* child) {
+
+    void special_delete(AVLTree *child) {
         data = child->data;
         left = child->left;
         right = child->right;
         delete child;
     }
 
-    AVLTree* minValueNode() {
-        AVLTree* current = this;
+    AVLTree *minValueNode() {
+        AVLTree *current = this;
         while (current && current->left)
             current = current->left;
         return current;
     }
-    AVLTree* delete_node(T target, AVLTree* node) {
+
+    AVLTree *delete_node(T target, AVLTree *node) {
         if (!node)
             return nullptr;
 
@@ -108,13 +113,12 @@ private:
             if (!node->left && !node->right) {
                 delete node;
                 node = nullptr;
-            }
-            else if (!node->right) 	// case 2: has left only
-                node->special_delete(node->left);		// connect with child
-            else if (!node->left)	// case 2: has right only
+            } else if (!node->right)    // case 2: has left only
+                node->special_delete(node->left);        // connect with child
+            else if (!node->left)    // case 2: has right only
                 node->special_delete(node->right);
             else {
-                AVLTree* mn = node->right->minValueNode();
+                AVLTree *mn = node->right->minValueNode();
                 node->data = mn->data;
                 node->right = delete_node(node->data, node->right);
             }
@@ -127,13 +131,12 @@ private:
     }
 
 
+    AVLTree *balance(AVLTree *node) {
+        if (node->getBalanceFactor() == 2) {            // Left
+            if (node->left->getBalanceFactor() == -1)    // Left Right?
+                node->left = leftRotate(node->left);    // To Left Left
 
-    AVLTree* balance(AVLTree* node) {
-        if (node->getBalanceFactor() == 2) { 			// Left
-            if (node->left->getBalanceFactor() == -1)	// Left Right?
-                node->left = leftRotate(node->left);	// To Left Left
-
-            node = rightRotate(node);	// Balance Left Left
+            node = rightRotate(node);    // Balance Left Left
         } else if (node->getBalanceFactor() == -2) {
             if (node->right->getBalanceFactor() == 1)
                 node->right = rightRotate(node->right);
@@ -142,7 +145,8 @@ private:
         }
         return node;
     }
-    void reroot(AVLTree* node) {
+
+    void reroot(AVLTree *node) {
         if (node == this)
             return;
 
@@ -175,8 +179,7 @@ public:
                 right = new AVLTree(target);
             else
                 right->insert(target);
-        }
-        else {
+        } else {
             if (!right)
                 right = new AVLTree(target);
             else
@@ -192,7 +195,6 @@ public:
             return;
         reroot(delete_node(target, this));
     }
-
 
 
     void displaySortedByPriceAscending() {
@@ -216,10 +218,10 @@ class AVLTreeSortedByName {
 private:
     Item data;
     int height;
-    AVLTreeSortedByName* left{};
-    AVLTreeSortedByName* right{};
+    AVLTreeSortedByName *left{};
+    AVLTreeSortedByName *right{};
 
-    int getHeight(AVLTreeSortedByName* node) {
+    int getHeight(AVLTreeSortedByName *node) {
         if (node == nullptr)
             return -1;
         return node->height;
@@ -229,8 +231,8 @@ private:
         return getHeight(left) - getHeight(right);
     }
 
-    AVLTreeSortedByName* rightRotate(AVLTreeSortedByName* Q) {
-        AVLTreeSortedByName* P = Q->left;
+    AVLTreeSortedByName *rightRotate(AVLTreeSortedByName *Q) {
+        AVLTreeSortedByName *P = Q->left;
         Q->left = P->right;
         P->right = Q;
         Q->updateHeight();
@@ -238,8 +240,8 @@ private:
         return P;
     }
 
-    AVLTreeSortedByName* leftRotate(AVLTreeSortedByName* P) {
-        AVLTreeSortedByName* Q = P->right;
+    AVLTreeSortedByName *leftRotate(AVLTreeSortedByName *P) {
+        AVLTreeSortedByName *Q = P->right;
         P->right = Q->left;
         Q->left = P;
         P->updateHeight();
@@ -250,20 +252,22 @@ private:
     int updateHeight() {
         return height = 1 + max(getHeight(left), getHeight(right));
     }
-    void special_delete(AVLTreeSortedByName* child) {
+
+    void special_delete(AVLTreeSortedByName *child) {
         data = child->data;
         left = child->left;
         right = child->right;
         delete child;
     }
 
-    AVLTreeSortedByName* minValueNode() {
-        AVLTreeSortedByName* current = this;
+    AVLTreeSortedByName *minValueNode() {
+        AVLTreeSortedByName *current = this;
         while (current && current->left)
             current = current->left;
         return current;
     }
-    AVLTreeSortedByName* delete_node(Item target, AVLTreeSortedByName* node) {
+
+    AVLTreeSortedByName *delete_node(Item target, AVLTreeSortedByName *node) {
         if (!node)
             return nullptr;
 
@@ -275,13 +279,12 @@ private:
             if (!node->left && !node->right) {
                 delete node;
                 node = nullptr;
-            }
-            else if (!node->right) 	// case 2: has left only
-                node->special_delete(node->left);		// connect with child
-            else if (!node->left)	// case 2: has right only
+            } else if (!node->right)    // case 2: has left only
+                node->special_delete(node->left);        // connect with child
+            else if (!node->left)    // case 2: has right only
                 node->special_delete(node->right);
             else {
-                AVLTreeSortedByName* mn = node->right->minValueNode();
+                AVLTreeSortedByName *mn = node->right->minValueNode();
                 node->data = mn->data;
                 node->right = delete_node(node->data, node->right);
             }
@@ -294,13 +297,12 @@ private:
     }
 
 
+    AVLTreeSortedByName *balance(AVLTreeSortedByName *node) {
+        if (node->getBalanceFactor() == 2) {            // Left
+            if (node->left->getBalanceFactor() == -1)    // Left Right?
+                node->left = leftRotate(node->left);    // To Left Left
 
-    AVLTreeSortedByName* balance(AVLTreeSortedByName* node) {
-        if (node->getBalanceFactor() == 2) { 			// Left
-            if (node->left->getBalanceFactor() == -1)	// Left Right?
-                node->left = leftRotate(node->left);	// To Left Left
-
-            node = rightRotate(node);	// Balance Left Left
+            node = rightRotate(node);    // Balance Left Left
         } else if (node->getBalanceFactor() == -2) {
             if (node->right->getBalanceFactor() == 1)
                 node->right = rightRotate(node->right);
@@ -309,7 +311,8 @@ private:
         }
         return node;
     }
-    void reroot(AVLTreeSortedByName* node) {
+
+    void reroot(AVLTreeSortedByName *node) {
         if (node == this)
             return;
 
@@ -342,9 +345,8 @@ public:
                 right = new AVLTreeSortedByName(target);
             else
                 right->insert(target);
-        }
-        else {
-            if(!right) right= new AVLTreeSortedByName(target);
+        } else {
+            if (!right) right = new AVLTreeSortedByName(target);
             else right->insert(target);
         }
         updateHeight();
@@ -357,7 +359,6 @@ public:
             return;
         reroot(delete_node(target, this));
     }
-
 
 
     void displaySortedByNameAscending() {
@@ -378,7 +379,7 @@ public:
 };
 
 template<class T>
-void readItemsAVL(istream& input, AVLTree<T>& avl,string filename) {
+void readItemsAVL(istream &input, AVLTree<T> &avl, string filename) {
     ifstream fin(filename);
 
     if (!fin) {
@@ -398,7 +399,8 @@ void readItemsAVL(istream& input, AVLTree<T>& avl,string filename) {
         avl.insert(item);
     }
 }
-void readItemsNAVL(istream& input, AVLTreeSortedByName &Navl,string filename) {
+
+void readItemsNAVL(istream &input, AVLTreeSortedByName &Navl, string filename) {
     ifstream fin(filename);
 
     if (!fin) {
@@ -418,13 +420,203 @@ void readItemsNAVL(istream& input, AVLTreeSortedByName &Navl,string filename) {
         Navl.insert(item);
     }
 }
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+// ** MinHeap bybd2 mn hnaa **
+template<class T>
+class MinHeap {
+private:
+    vector<T> heap;
+    // btkhly el parent node hya asghar node
+    void heapifyUp(int index) {
+        if (index == 0) return; // howa bybd2 mn el akher ll awal , fa lma ywsl 0 done
+        int parent = (index - 1) / 2; // parent rules
+        if (heap[index] < heap[parent]) { // index bymosl el min, fa lw el min asgahr mn parent swap them
+            // 3shan yb2a el parent howa el index(el soghyr)
+            swap(heap[index], heap[parent]);
+            heapifyUp(parent);
+        }
+    }
+
+    void heapifyDown(int index) {
+        int leftChild = 2 * index + 1; // by7sb el left w el right children
+        int rightChild = 2 * index + 2;
+        int smallest = index;
+
+        //law el leftChild lsa fe elements mawslsh ll akher
+        // wlw el leftChild asghar mn smallest , swap them , nafs fekrt eli fo2
+        if (leftChild < heap.size() && heap[leftChild] < heap[smallest])
+            smallest = leftChild;
+        // nafs el kalam bas 3la el right
+        if (rightChild < heap.size() && heap[rightChild] < heap[smallest])
+            smallest = rightChild;
+        // lw el smallest msh howa index swapo
+        if (smallest != index) {
+            swap(heap[index], heap[smallest]);
+            heapifyDown(smallest);
+        }
+    }
+
+public:
+    // el insert bt push el item then btst3ml heapifyUp 3shan t sort bl tarteb el sa7
+    //(lma b insert item geded el sorting byboz fa lazem asort tany 3shan ybaa kol haga fola)
+    void insert(T item) {
+        heap.push_back(item);
+        heapifyUp(heap.size() - 1);
+    }
+
+    // remove bt search 3l item eli 3ayz ams7o
+    void remove(T item) {
+        auto it = find(heap.begin(), heap.end(), item);
+        if (it == heap.end()) return;// lw el it wasal ll akehr w mala2hosh , return
+
+        // law la2eto ems7o then sort el array tany using heapify
+        int index = distance(heap.begin(), it);
+        heap[index] = heap.back();
+        heap.pop_back();
+        heapifyDown(index);
+        cout<<"item etmasa7 benga7 :)))"<<endl;
+    }
+    // m3rofa yaani mthresh m3aya
+    void display() const {
+        for (const auto &item: heap) {
+            cout << item;
+        }
+    }
+    // same as display el 3ady bas bt sort el awl then ttb3
+    // // 3shan da minheap by sort assc by default
+    void displaySorted() {
+        vector<T> tempHeap = heap;
+        sort(tempHeap.begin(), tempHeap.end());
+        for (const auto &item: tempHeap) {
+            cout << item;
+        }
+    }
+    // lamdba function bt sort el names assc
+    void displaySortedByNameAscending() {
+        vector<T> tempHeap = heap;
+        sort(tempHeap.begin(), tempHeap.end(), [](const T &a, const T &b) {
+            return a.getName() < b.getName();
+        });
+        for (const auto &item: tempHeap) {
+            cout << item;
+        }
+    }
+};
+
+// *********************************************************************************************************
+// *********************************************************************************************************
+
+// ** MaxHeap class **
+template<class T>
+class MaxHeap {
+private:
+    vector<T> heap;
+    // btkhly el parent node hya akbar node
+    void heapifyUp(int index) {
+        if (index == 0) return; // howa bybd2 mn el akher ll awal , fa lm ywsl 0 done
+        int parent = (index - 1) / 2; // parent rules
+        if (heap[index] > heap[parent]) {
+            swap(heap[index], heap[parent]);// index byomsl el max, fa lw el max akbar mn parent swap them
+            // 3shan yb2a el parent howa el index(el keber)
+            heapifyUp(parent);
+        }
+    }
+    // btrtb el heap w t check 3la akbar node 3shan da maxHeap
+    void heapifyDown(int index) {
+        int leftChild = 2 * index + 1;
+        int rightChild = 2 * index + 2;
+        int largest = index;
+        // nafs el fekra bas el 3aks
+        if (leftChild < heap.size() && heap[leftChild] > heap[largest])
+            largest = leftChild;
+        if (rightChild < heap.size() && heap[rightChild] > heap[largest])
+            largest = rightChild;
+
+        if (largest != index) {
+            swap(heap[index], heap[largest]);
+            heapifyDown(largest);
+        }
+    }
+
+public:
+    // insert mthressh
+    // ba2y el functions eli taht mashro7en fo2 (matktrsh ma3aya)
+    void insert(T item) {
+        heap.push_back(item);
+        heapifyUp(heap.size() - 1);
+    }
+
+    void remove(T item) {
+        auto it = find(heap.begin(), heap.end(), item);
+        if (it == heap.end()) return;
+
+        int index = distance(heap.begin(), it);
+        heap[index] = heap.back();
+        heap.pop_back();
+        heapifyDown(index);
+        cout<<"item etmasa7 benga7 :)))"<<endl;
+    }
+
+    void display() const {
+        for (const auto &item: heap) {
+            cout << item;
+        }
+    }
+
+    void displaySorted() {
+        vector<T> tempHeap = heap;
+        sort(tempHeap.begin(), tempHeap.end(), greater<T>()); // 3shan da maxheap by sort desc by default
+        for (const auto &item: tempHeap) {
+            cout << item;
+        }
+    }
+
+
+    void displaySortedByNameDescending() {
+        vector<T> tempHeap = heap;
+        sort(tempHeap.begin(), tempHeap.end(), [](const T &a, const T &b) {
+            return a.getName() > b.getName();
+        });
+        for (const auto &item: tempHeap) {
+            cout << item;
+        }
+    }
+};
+// da eli by2ra el data mn el file
+template<class T>
+void readItemsHeap(istream &input, MinHeap<T> &minHeap, MaxHeap<T> &maxHeap, string filename) {
+    ifstream fin(filename);
+
+    if (!fin) { // law 7asal error return da
+        cerr << "Error opening file." << endl;
+        return;
+    }
+    int numObjects;
+    fin >> numObjects;
+    for (int i = 0; i < numObjects; ++i) {
+        string name, category;
+        double price;
+        fin.ignore();
+        getline(fin, name);
+        getline(fin, category);
+        fin >> price;
+        Item item(name, category, price);
+        minHeap.insert(item);
+        maxHeap.insert(item);
+    }
+    cout << "Data read successfully." << endl; // yeeeaaaah
+}
+
 
 int main() {
     Item item("item1", "CS", 10);
     //BST<Item> bst;
     AVLTree<Item> avl(item);
     AVLTreeSortedByName Navl(item);
-    //Heap<Item> heap;
+    MinHeap<Item> minHeap;
+    MaxHeap<Item> maxHeap;
 
     bool mainFlag = true;
     while (mainFlag) {
@@ -505,24 +697,31 @@ int main() {
                         case 1: {
                             string name, category;
                             double price;
-                            cout << "Enter Name of item: "; cin >> name;
-                            cout << "\nEnter Category: "; cin >> category;
-                            cout << "\nEnter Price: "; cin >> price;
+                            cout << "Enter Name of item: ";
+                            cin >> name;
+                            cout << "\nEnter Category: ";
+                            cin >> category;
+                            cout << "\nEnter Price: ";
+                            cin >> price;
                             avl.insert(Item(name, category, price));
                             break;
                         }
                         case 2: {
                             string name, category;
                             double price;
-                            cout << "Enter Name of item: "; cin >> name;
-                            cout << "\nEnter Category: "; cin >> category;
-                            cout << "\nEnter Price: "; cin >> price;
+                            cout << "Enter Name of item: ";
+                            cin >> name;
+                            cout << "\nEnter Category: ";
+                            cin >> category;
+                            cout << "\nEnter Price: ";
+                            cin >> price;
                             avl.delete_value(Item(name, category, price));
                             break;
                         }
                         case 3: {
                             cout << "\nEnter File Name(with .txt): ";
-                            string filename; cin >> filename;
+                            string filename;
+                            cin >> filename;
                             readItemsAVL(cin, avl, filename);
                             break;
                         }
@@ -560,24 +759,31 @@ int main() {
                         case 1: {
                             string name, category;
                             double price;
-                            cout << "Enter Name of item: "; cin >> name;
-                            cout << "\nEnter Category: "; cin >> category;
-                            cout << "\nEnter Price: "; cin >> price;
+                            cout << "Enter Name of item: ";
+                            cin >> name;
+                            cout << "\nEnter Category: ";
+                            cin >> category;
+                            cout << "\nEnter Price: ";
+                            cin >> price;
                             Navl.insert(Item(name, category, price));
                             break;
                         }
                         case 2: {
                             string name, category;
                             double price;
-                            cout << "Enter Name of item: "; cin >> name;
-                            cout << "\nEnter Category: "; cin >> category;
-                            cout << "\nEnter Price: "; cin >> price;
+                            cout << "Enter Name of item: ";
+                            cin >> name;
+                            cout << "\nEnter Category: ";
+                            cin >> category;
+                            cout << "\nEnter Price: ";
+                            cin >> price;
                             Navl.delete_value(Item(name, category, price));
                             break;
                         }
                         case 3: {
                             cout << "\nEnter File Name(with .txt): ";
-                            string filename; cin >> filename;
+                            string filename;
+                            cin >> filename;
                             readItemsNAVL(cin, Navl, filename);
                             break;
                         }
@@ -601,41 +807,103 @@ int main() {
                 while (heapFlag) {
                     int heapChoice;
                     cout << "Heap Operations:\n"
-                         << "1. Add item data\n"
-                         << "2. Remove item data\n"
-                         << "3. Display item data normally\n"
-                         << "4. Display all items sorted by name ascending\n"
-                         << "5. Display all items sorted by name descending\n"
-                         << "6. Display all items sorted by prices ascending\n"
-                         << "7. Display all items sorted by prices descending\n"
-                         << "8. Exit\n"
+                         << "1. Add item data to MinHeap\n"
+                         << "2. Add item data to MaxHeap\n"
+                         << "3. Remove item data from MinHeap\n"
+                         << "4. Remove item data from MaxHeap\n"
+                         << "5. Read Data From File\n"
+                         << "6. Display MinHeap\n"
+                         << "7. Display MaxHeap\n"
+                         << "8. Display all items sorted by prices ascending (MinHeap)\n"
+                         << "9. Display all items sorted by prices descending (MaxHeap)\n"
+                         << "10. Display all items sorted by Name ascending (MinHeap)\n"
+                         << "11. Display all items sorted by Name descending (MaxHeap)\n"
+                         << "12. Exit\n"
                          << "Enter choice: ";
                     cin >> heapChoice;
 
                     switch (heapChoice) {
                         case 1: {
-                            // Add item data.
+                            string name, category;
+                            double price;
+                            cout << "Enter item name: ";
+                            cin.ignore();
+                            getline(cin, name);
+                            cout << "Enter category: ";
+                            getline(cin, category);
+                            cout << "Enter price: ";
+                            cin >> price;
+                            Item item(name, category, price);
+                            minHeap.insert(item);
                             break;
                         }
-                        case 2:
-                            // Remove item data.
+                        case 2: {
+                            string name, category;
+                            double price;
+                            cout << "Enter item name: ";
+                            cin.ignore();
+                            getline(cin, name);
+                            cout << "Enter category: ";
+                            getline(cin, category);
+                            cout << "Enter price: ";
+                            cin >> price;
+                            Item item(name, category, price);
+                            maxHeap.insert(item);
                             break;
-                        case 3:
-                            // Displaying item data normally.
+                        }
+                        case 3: {
+                            string name, category;
+                            double price;
+                            cout << "Enter item name: ";
+                            cin.ignore();
+                            getline(cin, name);
+                            cout << "Enter category: ";
+                            getline(cin, category);
+                            cout << "Enter price: ";
+                            cin >> price;
+                            Item item(name, category, price);
+                            minHeap.remove(item);
                             break;
-                        case 4:
-                            // Display all items sorted by name ascending.
+                        }
+                        case 4: {
+                            string name, category;
+                            double price;
+                            cout << "Enter item name: ";
+                            cin.ignore();
+                            getline(cin, name);
+                            cout << "Enter category: ";
+                            getline(cin, category);
+                            cout << "Enter price: ";
+                            cin >> price;
+                            Item item(name, category, price);
+                            maxHeap.remove(item);
                             break;
+                        }
                         case 5:
-                            // Display all items sorted by name descending.
+                            readItemsHeap(cin, minHeap, maxHeap, "items.txt");
                             break;
                         case 6:
-                            // Display all items sorted by prices ascending
+                            minHeap.display();
                             break;
                         case 7:
-                            // Display all items sorted by prices descending.
+                            maxHeap.display();
                             break;
                         case 8:
+                            minHeap.displaySorted();
+                            break;
+                        case 9:
+                            maxHeap.displaySorted();
+                            break;
+                        case 10:
+                            minHeap.displaySortedByNameAscending();
+                            // lw fe capital letter byb2a fo2 even lw 7arf "z"
+                            // 3shan howa by sort bl ascii
+                            break;
+                        case 11:
+                            maxHeap.displaySortedByNameDescending();
+                            // same as above bas el 3aks
+                            break;
+                        case 12:
                             heapFlag = false;
                             break;
                         default:
