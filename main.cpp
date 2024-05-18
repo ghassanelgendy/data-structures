@@ -1,21 +1,34 @@
 #include<iostream>
 #include<queue>
-#include<cassert>
 #include<algorithm>
 #include <fstream>
 
 using namespace std;
 
+string to_lower(string s) {
+    for (char &c: s)
+        c = tolower(c);
+    return s;
+}
+
 class Item {
 private:
+    string nameSmall;
+
     string itemName;
     string category;
     double price;
 public:
-    Item(string name, string category, double p) : itemName(name), category(category), price(p) {}
+    Item(string name, string category, double p) : itemName(name), category(category), price(p) {
+        nameSmall = to_lower(itemName);
+    }
+
+    Item() : itemName("Unnamed"), category("Null"), price(0.0) {
+        nameSmall = to_lower(itemName);
+    };
 
     string getName() const {
-        return itemName;
+        return nameSmall;
     }
 
     bool operator<(const Item &other) const {
@@ -32,20 +45,262 @@ public:
 
 
     friend ostream &operator<<(ostream &os, const Item &item) {
-        os << " Name: " << item.itemName << ", Category: " << item.category << ", Price: " << item.price << '\n';
+        if (item.nameSmall != "unnamed")
+            os << " Name: " << item.itemName << ", Category: " << item.category << ", Price: " << item.price << '\n';
         return os;
     }
 };
 
+class BST {
+private:
+    BST *left{};
+    BST *right{};
+    Item data;
+public:
+    BST() {
+        data = Item();
+    }
 
+    BST(Item input) : data(input) {};
 
+    void insert(Item item) {
+        if (item < data) {
+            if (!left) {
+                left = new BST(item);
+            } else {
+                left->insert(item);
+            }
+        } else {
+            if (!right) {
+                right = new BST(item);
+            } else {
+                right->insert(item);
+            }
+        }
+    }
 
-//// akhoya ghassan
-//template<typename T>
-//class BST {
-//
-//};
+    void displayAsc() {
+        if (left) {
+            left->displayAsc();
+        }
+        cout << data << " ";
+        if (right) {
+            right->displayAsc();
+        }
+    }
 
+    void displayDisc() {
+        if (right) {
+            right->displayDisc();
+        }
+        cout << data << " ";
+
+        if (left) {
+            left->displayDisc();
+        }
+    }
+
+    Item search(BST *Node, const std::string &x) {
+        if (!Node) {
+            return Item();
+        }
+        if (Node->data.getName() == x) {
+            return Node->data;
+        } else if (x < Node->data.getName()) {
+            return search(Node->left, x);
+        } else {
+            return search(Node->right, x);
+        }
+    }
+
+    Item search(const std::string &x) {
+        return search(this, x);
+    }
+
+    void remove(Item x) {
+
+    }
+
+    BST *findMin(BST *node) {
+        while (node->left) {
+            node = node->left;
+        }
+        return node;
+    }
+
+    BST *remove(BST *root, const std::string &key) {
+        if (!root) {
+            return nullptr;
+        }
+
+        if (key < root->data.getName()) {
+            root->left = remove(root->left, key);
+        } else if (key > root->data.getName()) {
+            root->right = remove(root->right, key);
+        } else {
+            if (!root->left) {
+                BST *temp = root->right;
+                delete root;
+                return temp;
+            } else if (!root->right) {
+                BST *temp = root->left;
+                delete root;
+                return temp;
+            }
+            BST *temp = findMin(root->right);
+            root->data = temp->data;
+
+            root->right = remove(root->right, temp->data.getName());
+        }
+        return root;
+    }
+
+};
+void readItemsBST(istream &input, BST* avl, string& filename) {
+    ifstream fin(filename);
+
+    if (!fin) {
+        cerr << "Error opening file." << endl;
+        return;
+    }
+    int numObjects;
+    fin >> numObjects;
+    for (int i = 0; i < numObjects; ++i) {
+        string name, category;
+        double price;
+        fin.ignore();
+        getline(fin, name);
+        getline(fin, category);
+        fin >> price;
+        Item item(name, category, price);
+        avl->insert(item);
+    }
+}
+class BSTN {
+private:
+    BSTN *left{};
+    BSTN *right{};
+    Item data;
+public:
+    BSTN() {
+        data = Item();
+    }
+
+    BSTN(Item input) : data(input) {};
+
+    void insert(Item item) {
+        if (item.getName() < data.getName()) {
+            if (!left) {
+                left = new BSTN(item);
+            } else {
+                left->insert(item);
+            }
+        } else {
+            if (!right) {
+                right = new BSTN(item);
+            } else {
+                right->insert(item);
+            }
+        }
+    }
+
+    void displayAsc() {
+        if (left) {
+            left->displayAsc();
+        }
+        cout << data << " ";
+        if (right) {
+            right->displayAsc();
+        }
+    }
+
+    void displayDisc() {
+        if (right) {
+            right->displayDisc();
+        }
+        cout << data << " ";
+
+        if (left) {
+            left->displayDisc();
+        }
+    }
+
+    Item search(BSTN *Node, const std::string &x) {
+        if (!Node) {
+            return Item();
+        }
+        if (Node->data.getName() == x) {
+            return Node->data;
+        } else if (x < Node->data.getName()) {
+            return search(Node->left, x);
+        } else {
+            return search(Node->right, x);
+        }
+    }
+
+    Item search(const std::string &x) {
+        return search(this, x);
+    }
+
+    void remove(Item x) {
+
+    }
+
+    BSTN *findMin(BSTN *node) {
+        while (node->left) {
+            node = node->left;
+        }
+        return node;
+    }
+
+    BSTN *remove(BSTN *root, const std::string &key) {
+        if (!root) {
+            return nullptr;
+        }
+
+        if (key < root->data.getName()) {
+            root->left = remove(root->left, key);
+        } else if (key > root->data.getName()) {
+            root->right = remove(root->right, key);
+        } else {
+            if (!root->left) {
+                BSTN *temp = root->right;
+                delete root;
+                return temp;
+            } else if (!root->right) {
+                BSTN *temp = root->left;
+                delete root;
+                return temp;
+            }
+            BSTN *temp = findMin(root->right);
+            root->data = temp->data;
+
+            root->right = remove(root->right, temp->data.getName());
+        }
+        return root;
+    }
+
+};
+void readItemsBSTN(istream &input, BSTN* avl, string filename) {
+    ifstream fin(filename);
+
+    if (!fin) {
+        cerr << "Error opening file." << endl;
+        return;
+    }
+    int numObjects;
+    fin >> numObjects;
+    for (int i = 0; i < numObjects; ++i) {
+        string name, category;
+        double price;
+        fin.ignore();
+        getline(fin, name);
+        getline(fin, category);
+        fin >> price;
+        Item item(name, category, price);
+        avl->insert(item);
+    }
+}
 // akhoya atef
 template<class T>
 class AVLTree {
@@ -428,6 +683,7 @@ template<class T>
 class MinHeap {
 private:
     vector<T> heap;
+
     // btkhly el parent node hya asghar node
     void heapifyUp(int index) {
         if (index == 0) return; // howa bybd2 mn el akher ll awal , fa lma ywsl 0 done
@@ -476,14 +732,16 @@ public:
         heap[index] = heap.back();
         heap.pop_back();
         heapifyDown(index);
-        cout<<"item etmasa7 benga7 :)))"<<endl;
+        cout << "item etmasa7 benga7 :)))" << endl;
     }
+
     // m3rofa yaani mthresh m3aya
     void display() const {
         for (const auto &item: heap) {
             cout << item;
         }
     }
+
     // same as display el 3ady bas bt sort el awl then ttb3
     // // 3shan da minheap by sort assc by default
     void displaySorted() {
@@ -493,6 +751,7 @@ public:
             cout << item;
         }
     }
+
     // lamdba function bt sort el names assc
     void displaySortedByNameAscending() {
         vector<T> tempHeap = heap;
@@ -513,6 +772,7 @@ template<class T>
 class MaxHeap {
 private:
     vector<T> heap;
+
     // btkhly el parent node hya akbar node
     void heapifyUp(int index) {
         if (index == 0) return; // howa bybd2 mn el akher ll awal , fa lm ywsl 0 done
@@ -523,6 +783,7 @@ private:
             heapifyUp(parent);
         }
     }
+
     // btrtb el heap w t check 3la akbar node 3shan da maxHeap
     void heapifyDown(int index) {
         int leftChild = 2 * index + 1;
@@ -556,7 +817,7 @@ public:
         heap[index] = heap.back();
         heap.pop_back();
         heapifyDown(index);
-        cout<<"item etmasa7 benga7 :)))"<<endl;
+        cout << "item etmasa7 benga7 :)))" << endl;
     }
 
     void display() const {
@@ -584,6 +845,7 @@ public:
         }
     }
 };
+
 // da eli by2ra el data mn el file
 template<class T>
 void readItemsHeap(istream &input, MinHeap<T> &minHeap, MaxHeap<T> &maxHeap, string filename) {
@@ -612,7 +874,8 @@ void readItemsHeap(istream &input, MinHeap<T> &minHeap, MaxHeap<T> &maxHeap, str
 
 int main() {
     Item item("item1", "CS", 10);
-    //BST<Item> bst;
+    BST *bst = new BST;
+    BSTN *bstn = new BSTN;
     AVLTree<Item> avl(item);
     AVLTreeSortedByName Navl(item);
     MinHeap<Item> minHeap;
@@ -643,35 +906,68 @@ int main() {
                          << "5. Display all items sorted by name descending\n"
                          << "6. Display all items sorted by prices ascending\n"
                          << "7. Display all items sorted by prices descending\n"
+
                          << "8. Exit\n"
-                         << "Enter choice: ";
+                            << "9. Read Data From File\n"
+
+                            << "Enter choice: ";
                     cin >> bstChoice;
 
                     switch (bstChoice) {
                         case 1: {
-                            // Add item data.
-                            break;
+                            string name, category;
+                            double price;
+                            cout << "Enter Name of item: ";
+                            cin >> name;
+                            cout << "\nEnter Category: ";
+                            cin >> category;
+                            cout << "\nEnter Price: ";
+                            cin >> price;
+                            bstn->insert(Item(name, category, price));
+                            bst->insert(Item(name, category, price));
                         }
-                        case 2:
-                            // Remove item data.
                             break;
-                        case 3:
-                            // Display the item data normally.
+                        case 2: {
+                            string name;
+                            cout << "Enter Name of item: ";
+                            cin >> name;
+                            bstn->remove(bstn, name);
+                            bst->remove(bst, name);
+
+                        }
                             break;
-                        case 4:
+                        case 3: {
+                            bst->displayAsc();
+                        }
+                            break;
+                        case 4: {
+                            bstn->displayAsc();
+                        }
                             // Display all the items sorted by their name ascending.
                             break;
                         case 5:
+                            bstn->displayDisc();
+
                             // Display all the items sorted by their name descending.
                             break;
                         case 6:
+                            bst->displayAsc();
                             // Display all the items sorted by their prices ascending.
                             break;
                         case 7:
+                            bst->displayDisc();
                             // Display all the items sorted by their prices descending.
                             break;
                         case 8:
                             bstFlag = false;
+                            break;
+                        case 9:{
+                            cout << "\nEnter File Name(with .txt): ";
+                            string filename;
+                            cin >> filename;
+                            readItemsBST(cin, bst, filename);
+                            readItemsBSTN(cin, bstn, filename);
+                    }
                             break;
                         default:
                             cout << "Invalid choice.";

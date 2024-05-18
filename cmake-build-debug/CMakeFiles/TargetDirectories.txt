@@ -1,3 +1,3 @@
-F:/Github/CS214-A2/CS214-A2/cmake-build-debug/CMakeFiles/CS214_A2.dir
-F:/Github/CS214-A2/CS214-A2/cmake-build-debug/CMakeFiles/edit_cache.dir
-F:/Github/CS214-A2/CS214-A2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/GElgendy/Documents/GitHub/CS214-A2/cmake-build-debug/CMakeFiles/CS214_A2.dir
+C:/Users/GElgendy/Documents/GitHub/CS214-A2/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/GElgendy/Documents/GitHub/CS214-A2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
