@@ -50,133 +50,7 @@ public:
         return os;
     }
 };
-
-class BST {
-private:
-    BST *left{};
-    BST *right{};
-    Item data;
-public:
-    BST() {
-        data = Item();
-    }
-
-    BST(Item input) : data(input) {};
-
-    void insert(Item item) {
-        if (item < data) {
-            if (!left) {
-                left = new BST(item);
-            } else {
-                left->insert(item);
-            }
-        } else {
-            if (!right) {
-                right = new BST(item);
-            } else {
-                right->insert(item);
-            }
-        }
-    }
-
-    void displayAsc() {
-        if (left) {
-            left->displayAsc();
-        }
-        cout << data << " ";
-        if (right) {
-            right->displayAsc();
-        }
-    }
-
-    void displayDisc() {
-        if (right) {
-            right->displayDisc();
-        }
-        cout << data << " ";
-
-        if (left) {
-            left->displayDisc();
-        }
-    }
-
-    Item search(BST *Node, const std::string &x) {
-        if (!Node) {
-            return Item();
-        }
-        if (Node->data.getName() == x) {
-            return Node->data;
-        } else if (x < Node->data.getName()) {
-            return search(Node->left, x);
-        } else {
-            return search(Node->right, x);
-        }
-    }
-
-    Item search(const std::string &x) {
-        return search(this, x);
-    }
-
-    void remove(Item x) {
-
-    }
-
-    BST *findMin(BST *node) {
-        while (node->left) {
-            node = node->left;
-        }
-        return node;
-    }
-
-    BST *remove(BST *root, const std::string &key) {
-        if (!root) {
-            return nullptr;
-        }
-
-        if (key < root->data.getName()) {
-            root->left = remove(root->left, key);
-        } else if (key > root->data.getName()) {
-            root->right = remove(root->right, key);
-        } else {
-            if (!root->left) {
-                BST *temp = root->right;
-                delete root;
-                return temp;
-            } else if (!root->right) {
-                BST *temp = root->left;
-                delete root;
-                return temp;
-            }
-            BST *temp = findMin(root->right);
-            root->data = temp->data;
-
-            root->right = remove(root->right, temp->data.getName());
-        }
-        return root;
-    }
-
-};
-void readItemsBST(istream &input, BST* avl, string& filename) {
-    ifstream fin(filename);
-
-    if (!fin) {
-        cerr << "Error opening file." << endl;
-        return;
-    }
-    int numObjects;
-    fin >> numObjects;
-    for (int i = 0; i < numObjects; ++i) {
-        string name, category;
-        double price;
-        fin.ignore();
-        getline(fin, name);
-        getline(fin, category);
-        fin >> price;
-        Item item(name, category, price);
-        avl->insert(item);
-    }
-}
-class BSTN {
+class BSTN{
 private:
     BSTN *left{};
     BSTN *right{};
@@ -281,6 +155,132 @@ public:
     }
 
 };
+
+class BST {
+private:
+    BST *left{};
+    BST *right{};
+    Item data;
+public:
+    BST() {
+        data = Item();
+    }
+
+    BST(Item input) : data(input) {};
+
+    void insert(Item item) {
+        if (item < data) {
+            if (!left) {
+                left = new BST(item);
+            } else {
+                left->insert(item);
+            }
+        } else {
+            if (!right) {
+                right = new BST(item);
+            } else {
+                right->insert(item);
+            }
+        }
+    }
+
+    void displayAsc() {
+        if (left) {
+            left->displayAsc();
+        }
+        cout << data << " ";
+        if (right) {
+            right->displayAsc();
+        }
+    }
+
+    void displayDisc() {
+        if (right) {
+            right->displayDisc();
+        }
+        cout << data << " ";
+
+        if (left) {
+            left->displayDisc();
+        }
+    }
+
+    Item search(BST *Node, const std::string &x) {
+        if (!Node) {
+            return Item();
+        }
+        if (Node->data.getName() == x) {
+            return Node->data;
+        } else if (x < Node->data.getName()) {
+            return search(Node->left, x);
+        } else {
+            return search(Node->right, x);
+        }
+    }
+
+    Item search(const std::string &x) {
+        return search(this, x);
+    }
+
+    BST remove(Item x) {
+        remove(this,x.getName());
+    }
+
+    BST *findMin(BST *node) {
+        while (node->left) {
+            node = node->left;
+        }
+        return node;
+    }
+
+    BST *remove(BST *root, const std::string &key) {
+        if (!root) {
+            return nullptr;
+        }
+
+        if (key < root->data.getName()) {
+            root->left = remove(root->left, key);
+        } else if (key > root->data.getName()) {
+            root->right = remove(root->right, key);
+        } else {
+            if (!root->left) {
+                BST *temp = root->right;
+                delete root;
+                return temp;
+            } else if (!root->right) {
+                BST *temp = root->left;
+                delete root;
+                return temp;
+            }
+            BST *temp = findMin(root->right);
+            root->data = temp->data;
+
+            root->right = remove(root->right, temp->data.getName());
+        }
+        return root;
+    }
+
+};
+void readItemsBST(istream &input, BST* avl, string& filename) {
+    ifstream fin(filename);
+
+    if (!fin) {
+        cerr << "Error opening file." << endl;
+        return;
+    }
+    int numObjects;
+    fin >> numObjects;
+    for (int i = 0; i < numObjects; ++i) {
+        string name, category;
+        double price;
+        fin.ignore();
+        getline(fin, name);
+        getline(fin, category);
+        fin >> price;
+        Item item(name, category, price);
+        avl->insert(item);
+    }
+}
 void readItemsBSTN(istream &input, BSTN* avl, string filename) {
     ifstream fin(filename);
 
